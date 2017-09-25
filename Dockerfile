@@ -25,9 +25,10 @@ RUN set -x ; \
   addgroup -g 82 -S www-data ; \
   adduser -u 82 -D -S -H -h /srv -G www-data www-data && exit 0 ; exit 1
 # 82 is the standard uid/gid for "www-data" in Alpine
-RUN apk-install ca-certificates libcap
+
 COPY --from=builder /go/src/github.com/mholt/caddy/caddy/caddy /usr/bin/
+RUN apk-install ca-certificates libcap
 RUN setcap cap_net_bind_service=+ep /usr/bin/caddy \
     && /usr/bin/caddy -version
 COPY rootfs /
-RUN apk-install ca-certificates libcap
+
