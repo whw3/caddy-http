@@ -1,6 +1,7 @@
+*~
 data/*
 docker-compose.yml
 plugins.go
 plugins.json
-*~
+
 
