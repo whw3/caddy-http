@@ -46,7 +46,20 @@ EOF
     fi
     cd "$BASEDIR"
     if [ ! -r docker-compose.yml ]; then
-        touch docker-compose.yml
+        cat << EOF > docker-compose.yml
+version: '3'
+
+services:
+   caddy:
+      image: whw3/caddy-whw3.com
+      build: .
+      ports:
+      - "8080:80"
+      - "4443:443"
+      - "2015:2015"
+      volumes:
+      - ./data/srv:/srv
+EOF
     fi
 }
 function update_baseimages()

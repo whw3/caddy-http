@@ -16,7 +16,7 @@ http.gopkg github.com/zikes/gopkg
 http.grpc github.com/pieterlouw/caddy-grpc
 http.ipfilter github.com/pyed/ipfilter
 http.jwt github.com/BTBurke/caddy-jwt
-http.login github.com/tarent/loginsrv/tree/master/caddy
+http.login github.com/tarent/loginsrv/caddy
 http.mailout github.com/SchumacherFM/mailout
 http.minify github.com/hacdias/caddy-minify
 http.nobots github.com/Xumeiquer/nobots
