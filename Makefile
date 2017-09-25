@@ -3,11 +3,14 @@ VERSION ?= latest
 REPO = caddy-http
 NAME = $(NS)/$(REPO)
 
-.PHONY: purge clean start stop
+.PHONY: purge clean start stop plugins.go
 
 all:: build
 
-build:
+plugins.go:
+	./configure.sh
+
+build: plugins.go
 	docker build --rm -t $(NAME) .
 
 push:

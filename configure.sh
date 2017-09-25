@@ -117,3 +117,4 @@ plugins=($(select_plugins))
 echo "$(update_plugins)" > plugins.go
 cat plugins.go
 [[ -z "$plugins" ]] && ./clean.sh
+exit 0
