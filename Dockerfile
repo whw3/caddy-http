@@ -17,7 +17,8 @@ RUN cd github.com/mholt/caddy/caddy \
     && go run build.go goos=linux
 
 FROM whw3/alpine:latest
-
+EXPOSE 80 443 2015
+ENTRYPOINT ["/init"]
 WORKDIR /srv
 # ensure www-data user exists
 RUN set -x ; \
@@ -28,6 +29,5 @@ RUN apk-install ca-certificates libcap
 COPY --from=builder /go/src/github.com/mholt/caddy/caddy/caddy /usr/bin/
 RUN setcap cap_net_bind_service=+ep /usr/bin/caddy \
     && /usr/bin/caddy -version
-EXPOSE 80 443 2015
-ENTRYPOINT ["/init"]
 COPY rootfs /
+RUN apk-install ca-certificates libcap
