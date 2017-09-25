@@ -1,14 +1,30 @@
-# Caddy build from source with plugins
+# Caddy build from source with plugins on RPI
 
 This Dockerfile builds the caddy server from a specific tag from github and adds
-the plugins listed in the `plugins.go` file. It usese my [caddy-builder](https://github.com/ulrichSchreiner/caddy-builder) for the compile step and my [caddy-runtime](https://github.com/ulrichSchreiner/caddy-runtime) as the runtime image.
+the plugins created by `configre.sh`. It's based on ulrichSchreiner's [caddy-builder](https://github.com/ulrichSchreiner/caddy-builder) for the compile step and ulrichSchreiner's [caddy-runtime](https://github.com/ulrichSchreiner/caddy-runtime) as the runtime image. Runtime image utilizes `s6-setuidgid` to drop privileges
+***Caddy will run with UID 82 (www-data) and not as root!***
 
-Start the container this way (this needs a `Caddyfile` in your cwd):
-~~~
-docker run -it --rm \
-  -v $PWD/Caddyfile:/etc/Caddyfile:ro \
-  -v /path/to/persistent/volume:/home/caddy/.caddy \
-  ulrichschreiner/caddy-http:latest --conf /etc/Caddyfile -agree -log stdout -port 80 -email you@your.domain
-~~~
+## Build Instructions
+```
+git clone https://github.com/whw3/caddy-http.git
+cd caddy-http
+./configure.sh
+make
+```
+## Runtime 
+1. start
+...  `make start`
+2. stop
+... `make stop`
 
-The server uses UID/GID 2002 to write files to `/home/caddy/.caddy` (letsencrypt certificates and keys). If you mount a local volume to this path make sure that this UID/GID has appropriate rights. Caddy will also run with this UID and not as root!
+
+###Requirements
+* jq
+* docker-compose
+
+No worrys `configure.sh` will install them if missing
+
+#TODO
+1. actually write content for docker-compose.yml
+* include php options
+* 

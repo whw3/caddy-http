@@ -1,0 +1,19 @@
+#!/bin/sh
+userid=www-data
+usergid=www-data
+export CADDYPATH=/srv/caddy
+Caddyfile="$CADDYPATH/Caddyfile"
+if [[ ! -d "CADDYPATH" ]]; then
+    mkdir -p "$CADDYPATH"
+    cp /etc/Caddyfile "$Caddyfile"
+fi
+chown $userid:usergid -R "$CADDYPATH"
+chmod g+s "$CADDYPATH"
+chmod 0444 "$Caddyfile"
+cd "$CADDYPATH"
+if [[ -d /srv/htdocs ]]; then
+    rootdir=/srv/htdocs
+else
+    rootdir="$(mktemp -d -t "caddy-run.XXXXXX")"
+fi
+exec s6-setuidgid $user /usr/bin/caddy -agree -log=stdout -conf=$Caddyfile -root=$rootdir
