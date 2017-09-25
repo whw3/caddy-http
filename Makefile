@@ -3,7 +3,7 @@ VERSION ?= latest
 REPO = caddy-http
 NAME = $(NS)/$(REPO)
 
-.PHONY: purge clean start stop plugins.go
+.PHONY: purge clean start stop 
 
 all:: build
 
