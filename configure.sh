@@ -22,7 +22,7 @@ function check_prereqs()
 }
 function check_data()
 {
-    if [ ! -d "$datadir" ]; then
+    if [ ! -d "$datadir" ]; then #create
         mkdir -p "$datadir"/{caddy,services.d,htdocs}
         cd "$datadir"
         cp -a "$rootfs"/etc/services.d/* "$datadir"/services.d/
@@ -43,6 +43,10 @@ EOF
         chmod a+x init.sh setPerms.sh
         cp "$rootfs"/etc/Caddyfile "$datadir"/caddy/
         cp "$BASEDIR"/index.html "$datadir"/htdocs/
+    else #look for updated files
+        cp -u "$rootfs"/etc/Caddyfile "$datadir"/caddy/
+        cp -u "$BASEDIR"/index.html "$datadir"/htdocs/
+        cp -u -a "$rootfs"/etc/services.d/* "$datadir"/services.d/
     fi
     cd "$BASEDIR"
     if [ ! -r docker-compose.yml ]; then
