@@ -8,7 +8,7 @@ the plugins created by `configre.sh`. It's based on ulrichSchreiner's [caddy-bui
 ```
 git clone https://github.com/whw3/caddy-http.git
 cd caddy-http
-./configure.sh
+make clean
 make
 ```
 ## Runtime 
