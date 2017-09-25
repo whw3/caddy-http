@@ -27,8 +27,9 @@ RUN set -x ; \
 # 82 is the standard uid/gid for "www-data" in Alpine
 
 COPY --from=builder /go/src/github.com/mholt/caddy/caddy/caddy /usr/bin/
+COPY rootfs /
 RUN apk-install ca-certificates libcap
 RUN setcap cap_net_bind_service=+ep /usr/bin/caddy \
     && /usr/bin/caddy -version
-COPY rootfs /
+
 
