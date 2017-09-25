@@ -51,7 +51,7 @@ version: '3'
 
 services:
    caddy:
-      image: whw3/caddy-whw3.com
+      image: whw3/caddy-http
       build: .
       ports:
       - "8080:80"
