@@ -4,10 +4,11 @@ BASEDIR=$(cd "$( dirname "$0" )" && pwd)
 cd "$BASEDIR"
 datadir="$BASEDIR/data/srv"
 rootfs="$BASEDIR/rootfs"
+dataExists=0
 function check_prereqs()
 { ### check pre-requisittes
     if  [[ -z "$(which jq)" ]]; then
-        whiptail --title "Missing Required File" --yesno "jq is required for this script to function.\nShould I install it for you?" 8 48 3>&1 1>&2 2>&3 || exit 1
+        whiptail --title "Missing Required Application" --yesno "jq is required for this script to function.\nShould I install it for you?" 8 48 3>&1 1>&2 2>&3 || exit 1
         apt-get update
         apt-get install -y jq
     fi
@@ -44,6 +45,7 @@ EOF
         cp "$rootfs"/etc/Caddyfile "$datadir"/caddy/
         cp "$BASEDIR"/index.html "$datadir"/htdocs/
     else #look for updated files
+        export dataExists=1
         cp -u "$rootfs"/etc/Caddyfile "$datadir"/caddy/
         cp -u "$BASEDIR"/index.html "$datadir"/htdocs/
         cp -u -a "$rootfs"/etc/services.d/* "$datadir"/services.d/
@@ -65,6 +67,7 @@ services:
       - ./data/srv:/srv
 EOF
     fi
+    cd "$BASEDIR"
 }
 function update_baseimages()
 {
@@ -92,10 +95,10 @@ function update_plugins()
     for _plugin in "${plugins[@]}"
     do
         _import=$(jq  '.[]| select(.name == "'"$_plugin"'")|.import' plugins.json)
-        printf "		_ $_import\n"
+        printf "		_ %s\n" "$_import"
         tmp="$(mktemp)"
-        jq "map(if .name == \"$_plugin\" then . + {\"status\":\"on\"} else . end)" plugins.json > $tmp
-        mv $tmp plugins.json
+        jq "map(if .name == \"$_plugin\" then . + {\"status\":\"on\"} else . end)" plugins.json > "$tmp"
+        mv "$tmp" plugins.json
     done
     printf "	)\n"  
 }    
@@ -117,8 +120,26 @@ if [ "$reset" = "1" ]; then
     json=$(reset_json)
     echo "$json" > plugins.json
 fi
+
 plugins=($(select_plugins))
-echo "$(update_plugins)" > plugins.go
-cat plugins.go
-[[ -z "$plugins" ]] && ./clean.sh
+if [[ -z "${plugins[@]}" ]]; then
+    if (whiptail --title "Confirm No plugins selected" --yesno "Should I really write an empty import file?" 8 78) then
+        update_plugins > plugins.go
+    else
+        if [[ -e plugins.go ]]; then
+            echo "Leaving plugins.go unmodified"
+        fi
+    fi
+else
+    update_plugins > plugins.go
+fi
+if [[ ! -e plugins.go ]]; then
+    clean="$BASEDIR/clean.sh"
+    if [[ "$dataExist" = "0" ]]; then
+        clean+=" -p data"
+    fi
+    $clean
+    echo "Terminated in an unconfigured state."
+    exit 1
+fi
 exit 0
