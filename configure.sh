@@ -33,6 +33,19 @@ find /srv/services.d/ -type f -exec chmod +x {} \;
 cp -a /srv/services.d/* /etc/services.d/
 chown -R root:www-data /srv
 chmod g+s /srv
+if [[ -z "$PHP_INI_DIR" ]]; then
+    for ini_dir in "/usr/local/etc/php /etc/php /etc/php7"
+    do
+        if [[ -d "$ini_dir" ]]; then
+            export PHP_INI_DIR="$ini_dir"
+        fi
+    done
+fi
+if [[ ! -z "$PHP_INI_DIR"]]
+    TZ=''
+    [[ -r /etc/timezone ]] && TZ=$(</etc/timezone)
+    [[ ! -z "$TZ" ]] && echo "date.timezone = \"$TZ\"" > "$PHP_INI_DIR"/php-fpm.d/timezone.conf
+fi
 EOF
         cat << EOF > setPerms.sh
 #/bin/bash
